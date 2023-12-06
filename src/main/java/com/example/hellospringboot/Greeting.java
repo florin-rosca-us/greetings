@@ -1,3 +1,3 @@
-package com.example.hello.data;
+package com.example.hellospringboot;
 
 public record Greeting(long id, String content) { }
