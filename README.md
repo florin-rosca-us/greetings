@@ -18,7 +18,20 @@ and [Debug asynchronous code](https://www.jetbrains.com/help/idea/debug-asynchro
 > testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 > ```
 
-To run: `cd build/libs && java -jar hello-spring-boot-0.0.1-SNAPSHOT.jar`
+## Running
+
+To run: `cd build/libs && java -jar hello-spring-boot-0.0.1-SNAPSHOT.jar`. We are using this in a Docker image, see 
+`Dockerfile` and `docker-compose.yml`
+
+To build Docker image: `docker compose build`
+
+To start containers: `docker compose up`
+
+To stop containers: `docker compose down`
+
+TODO: Automate Docker stuff in build with something like [gradle-docker](https://github.com/palantir/gradle-docker). 
+Warning: that project is "on life support"...
+Also, test with Docker containers?
 
 ## Service
 
@@ -31,8 +44,15 @@ See [Documenting a Spring REST API Using OpenAPI 3.0](https://www.baeldung.com/s
 * The REST API is published as JSON at http://localhost:8080/v3/api-docs
 * The generated UI is at http://localhost:8080/swagger-ui/index.html
 
+### Tracing
+[Tracing](https://reflectoring.io/spring-boot-tracing/) can be done with [OpenTracing](https://opentracing.io/)/[Jaeger](https://www.jaegertracing.io/)/[OpenTelemetry](https://opentelemetry.io/docs/migration/opentracing/).
+We have a [Jaeger](http://localhost:16686) instance running as a Docker image, see `docker-compose.yml`. For now we are using OpenTracing, maybe 
+will switch to OpenTelemetry if it makes sense.
+
+TODO: Investigate span baggage propagation. Create a project with 2 services, call one service from the other, check
+spans.
+
 ## Next?
-* [Tracing](https://reflectoring.io/spring-boot-tracing/) with [OpenTracing](https://opentracing.io/)/[Jaeger](https://www.jaegertracing.io/)/[OpenTelemetry](https://opentelemetry.io/docs/migration/opentracing/)?
-* [Liquibase](https://contribute.liquibase.com/extensions-integrations/directory/integration-docs/gradle/)
+* DB with [Liquibase](https://contribute.liquibase.com/extensions-integrations/directory/integration-docs/gradle/)
 * IBATIS/MyBATIS?
 * Create a JAR and deploy it in a Docker image?

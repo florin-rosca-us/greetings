@@ -23,5 +23,4 @@ class HelloSpringBootApplicationTests {
 		assertThat(tracer).isNotNull();
 	}
 
-
 }

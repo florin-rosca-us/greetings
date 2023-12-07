@@ -33,8 +33,9 @@ public class HelloSpringBootController {
         Span span = tracer.buildSpan("greeting").start(); // ???
         logger.debug("Inside greeting...");
         span.log("This is a span log message");
+        // TODO: Connect to database, write something
+        // TODO: In another project(?), call RestTemplate.get to another service, see if the span baggage propagates
         span.finish();
         return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
-
 }

@@ -1,5 +1,13 @@
 # To run from IntelliJ, enable Advanced/Allow the default Docker socket to be used in Docker Desktop settings.
 services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: hello
+      POSTGRES_PASSWORD: example
+
   # Tracing
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -21,5 +29,6 @@ services:
     restart: on-failure
     depends_on:
       - jaeger
+      - db
     ports:
       - 8080:8080
