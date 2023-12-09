@@ -26,11 +26,13 @@ services:
   # From https://www.split.io/blog/containerization-spring-boot-docker/
   # Should be replaced(?) by com.palantir.docker/docker-compose
   # For now build with `./gradlew build` then `docker compose up` from the project root directory
-  # See also Dockerfile
+  # See also hello-spring-boot.Dockerfile
   # The service should wait(?) for its dependencies, this is done with something like wait-for-it.sh
   # or with [testcontainers](https://java.testcontainers.org/)
   hello-spring-boot:
-    build: ./
+    build:
+      context: ./docker
+      dockerfile: hello-spring-boot.Dockerfile
     restart: on-failure
     depends_on:
       - jaeger
