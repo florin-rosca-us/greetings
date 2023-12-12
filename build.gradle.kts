@@ -73,9 +73,9 @@ liquibase {
 		this.arguments = mapOf(
 				"logLevel" to "debug",
 				"changeLogFile" to "./changelog.sql",
-				"url" to "jdbc:postgresql://localhost/postgres",
-				"username" to "postgres",
-				"password" to "postgres"
+				"url" to "jdbc:postgresql://localhost/example",
+				"username" to "greeting",
+				"password" to "secret"
 		)
 	}
 }
