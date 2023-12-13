@@ -1,5 +1,3 @@
-import org.liquibase.gradle.LiquibaseCommand
-
 plugins {
 	java
 	id("org.springframework.boot") version "3.2.0"
@@ -39,7 +37,7 @@ dependencies {
 	liquibaseRuntime("org.postgresql:postgresql:42.7.1")
 
 	// Postgres
-	// FIXME: Do we need both liqubaseRuntime and implementation for the JDBC driver?
+	// FIXME: Do we need both liquibaseRuntime and implementation for the JDBC driver?
 	implementation("org.postgresql:postgresql:42.7.1")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -65,14 +63,13 @@ tasks.getByName<Jar>("jar") {
 
 // Run `./gradlew update` to create tables
 // See changelog.sql
-// FIXME: Create a database, do not use the default "postgres" database
 // FIXME: The db docker image must be up. How do we start Docker in gradle?
 // Since this is run outside Docker, we are connecting to "localhost" instead of "db"
 liquibase {
 	activities.register("main") {
 		this.arguments = mapOf(
 				"logLevel" to "debug",
-				"changeLogFile" to "./changelog.sql",
+				"changelogFile" to "./changelog.sql",
 				"url" to "jdbc:postgresql://localhost/example",
 				"username" to "greeting",
 				"password" to "secret"

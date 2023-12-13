@@ -1,20 +1,24 @@
 # To run from IntelliJ, enable Advanced/Allow the default Docker socket to be used in Docker Desktop settings.
 services:
 
+  # Database
   db:
     # image: postgres
     build:
       context: .
       dockerfile: ./docker/db.Dockerfile
     restart: always
+    # Defaults, creates a database and an user if they don't already exist in Postgres
     environment:
-      # Defaults, creates a database and an user if they don't already exist in Postgres
       POSTGRES_USER: greeting
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: example
     # Expose ports so that we can create the database with gradle
     ports:
       - 5432:5432
+    # Create the database under ./data
+    volumes:
+      - ./data:/var/lib/postgresql/data
 
 
   # Tracing
@@ -28,6 +32,7 @@ services:
     hostname: jaeger
 
 
+  # App
   # Our greeting service / app
   # From https://www.split.io/blog/containerization-spring-boot-docker/
   # Should be replaced(?) by com.palantir.docker/docker-compose
@@ -45,3 +50,4 @@ services:
       - db
     ports:
       - 8080:8080
+
