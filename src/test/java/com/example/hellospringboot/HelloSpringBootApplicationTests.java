@@ -11,6 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HelloSpringBootApplicationTests {
 
 	@Autowired
+	private HelloSpringBootApplication application;
+	@Autowired
 	private HelloSpringBootController controller;
 
 	 @Autowired
@@ -19,6 +21,7 @@ class HelloSpringBootApplicationTests {
 
 	@Test
 	void contextLoads() {
+		assertThat(application).isNotNull();
 		assertThat(controller).isNotNull();
 		assertThat(tracer).isNotNull();
 	}

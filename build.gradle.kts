@@ -3,7 +3,7 @@ plugins {
 	id("org.springframework.boot") version "3.2.0"
 	id("io.spring.dependency-management") version "1.1.4"
 	id("org.liquibase.gradle") version "2.2.1"
-	id("com.avast.gradle.docker-compose") version "0.6.12"
+	id("com.avast.gradle.docker-compose") version "0.17.5"
 }
 
 group = "com.example"
@@ -25,50 +25,49 @@ repositories {
 	mavenCentral()
 }
 
+
+// ---------
+// From https://docs.gradle.org/current/userguide/java_testing.html
+// There is more below
+sourceSets {
+	create("intTest") {
+		compileClasspath += sourceSets.main.get().output
+		runtimeClasspath += sourceSets.main.get().output
+	}
+}
+
+val intTestImplementation by configurations.getting {
+	extendsFrom(configurations.implementation.get())
+}
+val intTestRuntimeOnly by configurations.getting
+
+configurations["intTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
+// ---------
+
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-
-	// Adds publishing of REST API via endpoint
-	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
-
-	// Adds tracing, see Jaeger
 	implementation("io.opentracing.contrib:opentracing-spring-jaeger-web-starter:3.3.1")
-	// From https://stackoverflow.com/questions/50855480/how-to-enrich-jaeger-opentracing-data-with-the-application-logs-produced-by-slf
-	// Log integration: either use spring-cloud-starter or just spring-cloud-core
+	implementation("org.postgresql:postgresql:42.7.1")
 
-	// Liquibase
-	// See https://contribute.liquibase.com/extensions-integrations/directory/integration-docs/gradle/
 	liquibaseRuntime("org.liquibase:liquibase-core:4.25.0")
 	liquibaseRuntime("org.liquibase:liquibase-groovy-dsl:3.0.3")
 	liquibaseRuntime("info.picocli:picocli:4.7.5")
 	liquibaseRuntime("org.yaml:snakeyaml:2.2")
 	liquibaseRuntime("org.postgresql:postgresql:42.7.1")
 
-	// Postgres
-	// FIXME: Do we need both liquibaseRuntime and implementation for the JDBC driver?
-	implementation("org.postgresql:postgresql:42.7.1")
-
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-
-	// Added to get rid of
-	// -- Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+	testImplementation("org.assertj:assertj-core:3.6.1")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-	// Assertions for tests
-	// https://mvnrepository.com/artifact/org.assertj/assertj-core
-	testImplementation("org.assertj:assertj-core:3.6.1")
+	intTestImplementation("org.springframework.boot:spring-boot-starter-test")
+	intTestImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+	intTestImplementation("org.assertj:assertj-core:3.6.1")
+	intTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
-
-// Do not generate *-plain.jar
-tasks.getByName<Jar>("jar") {
-	enabled = false
-}
 
 // Run `./gradlew update` to create tables
 // See changelog.sql
@@ -87,6 +86,38 @@ liquibase {
 }
 
 
-// Docker compose
-// TODO: Fix the error...?
-dockerCompose.isRequiredBy(project.tasks.named("test"))
+tasks.withType<Test> {
+	useJUnitPlatform()
+}
+
+// Do not generate *-plain.jar
+tasks.getByName<Jar>("jar") {
+	enabled = false
+}
+
+
+// ---------
+// From https://docs.gradle.org/current/userguide/java_testing.html
+val integrationTest = task<Test>("integrationTest") {
+	description = "Runs integration tests."
+	group = "verification"
+
+	testClassesDirs = sourceSets["intTest"].output.classesDirs
+	classpath = sourceSets["intTest"].runtimeClasspath
+	shouldRunAfter("test")
+
+	useJUnitPlatform()
+
+//	testLogging {
+//		events("passed")
+//	}
+}
+
+tasks.check { dependsOn(integrationTest) }
+// ---------
+
+dockerCompose.isRequiredBy(integrationTest)
+
+dockerCompose {
+	startedServices = listOf("db")
+}
