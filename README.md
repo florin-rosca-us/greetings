@@ -34,6 +34,9 @@ We could have used [initdb.sql](./initdb.sql) to create the schema but we are us
 
 To create the schema, run: `./gradlew update`
 
+> TODO: Mount a local directory (`./db`?) as a Docker volume, create the database there so that when the `db` image is
+> deleted we still have the data.
+
 ## Running
 
 It is possible to run the app/service with `cd build/libs && java -jar hello-spring-boot-0.0.1-SNAPSHOT.jar`.
@@ -46,13 +49,13 @@ To start containers: `docker compose up`
 
 To stop containers: `docker compose down`
 
-TODO: Automate Docker stuff in build with something like [gradle-docker](https://github.com/palantir/gradle-docker). 
+> TODO: Automate Docker stuff in build with something like [gradle-docker](https://github.com/palantir/gradle-docker). 
 Warning: that project is "on life support"...
 Also, test with Docker containers?
 
 ## Service
 
-The service publishes an enpoint at http://localhost:8080/greeting
+The service publishes an endpoint at http://localhost:8080/greeting
 
 ### OpenAPI Definition
 To add an OpenAPI definition endpoint, add `springdoc-openapi-starter-webmvc-ui` dependency.
@@ -63,13 +66,13 @@ See [Documenting a Spring REST API Using OpenAPI 3.0](https://www.baeldung.com/s
 
 ### Tracing
 [Tracing](https://reflectoring.io/spring-boot-tracing/) can be done with [OpenTracing](https://opentracing.io/)/[Jaeger](https://www.jaegertracing.io/)/[OpenTelemetry](https://opentelemetry.io/docs/migration/opentracing/).
-We have a [Jaeger](http://localhost:16686) instance running as a Docker image, see `docker-compose.yml`. For now we are using OpenTracing, maybe 
+We have a [Jaeger](http://localhost:16686) instance running as a Docker image, see [docker-compose.yml](./docker-compose.yml). For now we are using OpenTracing, maybe 
 will switch to OpenTelemetry if it makes sense.
 
-TODO: Investigate span baggage propagation. Create a project with 2 services, call one service from the other, check
+> TODO: Investigate span baggage propagation. Create a project with 2 services, call one service from the other, check
 spans.
 
 ## Next?
-* DB with [Liquibase](https://contribute.liquibase.com/extensions-integrations/directory/integration-docs/gradle/)
-* IBATIS/MyBATIS?
-* Create a JAR and deploy it in a Docker image?
+* Write something to the database...
+* Query database, return results...
+* Authentication/authorization? App token?
