@@ -18,12 +18,29 @@ and [Debug asynchronous code](https://www.jetbrains.com/help/idea/debug-asynchro
 > testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 > ```
 
+## Database
+We are using [PostgreSQL](https://www.postgresql.org/), which is
+[better](https://aws.amazon.com/compare/the-difference-between-mysql-vs-postgresql/) than
+[MySQL](https://www.mysql.com/).
+
+We are building a custom Docker `db` image so that we can initialize the database with a [initdb.sql](./initdb.sql).
+It is not exactly clear if we really need that, given that the database is initialized on start when environment
+variables are set, see [docker-compose.yml](./docker-compose.yml).
+
+> Note that [initdb.sql](./initdb.sql) is executed only once, if the database is empty.
+
+We could have used [initdb.sql](./initdb.sql) to create the schema but we are using
+[Liquibase](https://www.liquibase.com/) for that, see [changelog.sql](./changelog.sql).
+
+To create the schema, run: `./gradlew update`
+
 ## Running
 
-To run: `cd build/libs && java -jar hello-spring-boot-0.0.1-SNAPSHOT.jar`. We are using this in a Docker image, see 
-`Dockerfile` and `docker-compose.yml`
+It is possible to run the app/service with `cd build/libs && java -jar hello-spring-boot-0.0.1-SNAPSHOT.jar`.
+We are using this in a Docker image, see [app.Dockerfile](./docker/app.Dockerfile) and
+[docker-compose.yml](./docker-compose.yml).
 
-To build Docker image: `docker compose build`
+To build Docker images: `docker compose build`
 
 To start containers: `docker compose up`
 
