@@ -3,10 +3,19 @@ plugins {
 	id("org.springframework.boot") version "3.2.0"
 	id("io.spring.dependency-management") version "1.1.4"
 	id("org.liquibase.gradle") version "2.2.1"
+	id("com.avast.gradle.docker-compose") version "0.6.12"
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
+
+apply {
+	plugin("java")
+	plugin("org.springframework.boot")
+	plugin("io.spring.dependency-management")
+	plugin("org.liquibase.gradle")
+	plugin("com.avast.gradle.docker-compose")
+}
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
@@ -76,3 +85,8 @@ liquibase {
 		)
 	}
 }
+
+
+// Docker compose
+// TODO: Fix the error...?
+dockerCompose.isRequiredBy(project.tasks.named("test"))

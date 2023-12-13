@@ -34,8 +34,6 @@ We could have used [initdb.sql](./initdb.sql) to create the schema but we are us
 
 To create the schema, run: `./gradlew update`
 
-> TODO: Mount a local directory (`./db`?) as a Docker volume, create the database there so that when the `db` image is
-> deleted we still have the data.
 
 ## Running
 
