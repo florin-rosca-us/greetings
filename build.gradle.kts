@@ -86,8 +86,26 @@ liquibase {
 }
 
 
+// From https://docs.gradle.org/current/userguide/java_testing.html
+val integrationTest = task<Test>("integrationTest") {
+	description = "Runs integration tests."
+	group = "verification"
+	testClassesDirs = sourceSets["intTest"].output.classesDirs
+	classpath = sourceSets["intTest"].runtimeClasspath
+	shouldRunAfter("test")
+
+	// Use "int" profile as in "integration tests", see application-int.properties
+	doFirst() {
+		systemProperty("spring.profiles.active", "int")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
+	// Show everything when running tests
+	testLogging {
+		events("PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR")
+	}
 }
 
 // Do not generate *-plain.jar
@@ -95,29 +113,11 @@ tasks.getByName<Jar>("jar") {
 	enabled = false
 }
 
-
-// ---------
-// From https://docs.gradle.org/current/userguide/java_testing.html
-val integrationTest = task<Test>("integrationTest") {
-	description = "Runs integration tests."
-	group = "verification"
-
-	testClassesDirs = sourceSets["intTest"].output.classesDirs
-	classpath = sourceSets["intTest"].runtimeClasspath
-	shouldRunAfter("test")
-
-	useJUnitPlatform()
-
-//	testLogging {
-//		events("passed")
-//	}
-}
-
 tasks.check { dependsOn(integrationTest) }
-// ---------
 
 dockerCompose.isRequiredBy(integrationTest)
 
+// Start services when running integration tests
 dockerCompose {
-	startedServices = listOf("db")
+	startedServices = listOf("db", "jaeger")
 }

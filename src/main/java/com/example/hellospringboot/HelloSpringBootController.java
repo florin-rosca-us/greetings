@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloSpringBootController {
 
+    private final Logger log = LoggerFactory.getLogger(HelloSpringBootController.class);
+
     private final Tracer tracer;
 
     public HelloSpringBootController(Tracer tracer) {
@@ -26,12 +28,12 @@ public class HelloSpringBootController {
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
 
-    protected final Logger logger = LoggerFactory.getLogger(HelloSpringBootController.class);
+
 
     @GetMapping("/greeting")
     public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
         Span span = tracer.buildSpan("greeting").start(); // ???
-        logger.debug("Inside greeting...");
+        log.debug("Inside greeting...");
         span.log("This is a span log message");
         // TODO: Connect to database, write something
         // TODO: In another project(?), call RestTemplate.get to another service, see if the span baggage propagates

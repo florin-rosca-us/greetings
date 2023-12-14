@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 /**
  * From <a href="https://spring.io/guides/gs/testing-web/">spring.io</a>
+ * This is an integration test because accessing the endpoint sends UDP packets to Jaeger.
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class HelloSpringBootControllerTest {
