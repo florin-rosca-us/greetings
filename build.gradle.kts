@@ -36,10 +36,10 @@ sourceSets {
 	}
 }
 
-val intTestImplementation by configurations.getting {
+val intTestImplementation: Configuration by configurations.getting {
 	extendsFrom(configurations.implementation.get())
 }
-val intTestRuntimeOnly by configurations.getting
+val intTestRuntimeOnly: Configuration by configurations.getting
 
 configurations["intTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
 // ---------
@@ -47,6 +47,8 @@ configurations["intTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get(
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.0")
+	implementation("jakarta.persistence:jakarta.persistence-api:3.2.0-M1")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 	implementation("io.opentracing.contrib:opentracing-spring-jaeger-web-starter:3.3.1")
 	implementation("org.postgresql:postgresql:42.7.1")
@@ -60,6 +62,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 	testImplementation("org.assertj:assertj-core:3.6.1")
+	testImplementation("org.mockito:mockito-core:5.8.0")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 	intTestImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -95,7 +99,7 @@ val integrationTest = task<Test>("integrationTest") {
 	shouldRunAfter("test")
 
 	// Use "int" profile as in "integration tests", see application-int.properties
-	doFirst() {
+	doFirst {
 		systemProperty("spring.profiles.active", "int")
 	}
 }

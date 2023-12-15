@@ -1,7 +1,7 @@
 package com.example.hellospringboot;
 
-import java.util.concurrent.atomic.AtomicLong;
-
+import com.example.hellospringboot.db.Greeting;
+import com.example.hellospringboot.db.GreetingResponse;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.slf4j.Logger;
@@ -19,25 +19,26 @@ public class HelloSpringBootController {
 
     private final Logger log = LoggerFactory.getLogger(HelloSpringBootController.class);
 
+    private final GreetingService service;
     private final Tracer tracer;
 
-    public HelloSpringBootController(Tracer tracer) {
+    public HelloSpringBootController(GreetingService service, Tracer tracer) {
+        this.service = service;
         this.tracer = tracer;
     }
 
     private static final String template = "Hello, %s!";
-    private final AtomicLong counter = new AtomicLong();
-
 
 
     @GetMapping("/greeting")
-    public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+    public GreetingResponse greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
         Span span = tracer.buildSpan("greeting").start(); // ???
         log.debug("Inside greeting...");
         span.log("This is a span log message");
-        // TODO: Connect to database, write something
-        // TODO: In another project(?), call RestTemplate.get to another service, see if the span baggage propagates
+
+        Greeting greeting = service.create(name);
+
         span.finish();
-        return new Greeting(counter.incrementAndGet(), String.format(template, name));
+        return new GreetingResponse(greeting.getId(), String.format(template, greeting.getName()));
     }
 }
