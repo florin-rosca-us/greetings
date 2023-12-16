@@ -25,30 +25,13 @@ repositories {
 	mavenCentral()
 }
 
-
-// ---------
-// From https://docs.gradle.org/current/userguide/java_testing.html
-// There is more below
-sourceSets {
-	create("intTest") {
-		compileClasspath += sourceSets.main.get().output
-		runtimeClasspath += sourceSets.main.get().output
-	}
-}
-
-val intTestImplementation: Configuration by configurations.getting {
-	extendsFrom(configurations.implementation.get())
-}
-val intTestRuntimeOnly: Configuration by configurations.getting
-
-configurations["intTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
 // ---------
 
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.0")
-	implementation("jakarta.persistence:jakarta.persistence-api:3.2.0-M1")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.1.0")
+	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 	implementation("io.opentracing.contrib:opentracing-spring-jaeger-web-starter:3.3.1")
 	implementation("org.postgresql:postgresql:42.7.1")
@@ -65,11 +48,6 @@ dependencies {
 	testImplementation("org.mockito:mockito-core:5.8.0")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-	intTestImplementation("org.springframework.boot:spring-boot-starter-test")
-	intTestImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-	intTestImplementation("org.assertj:assertj-core:3.6.1")
-	intTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 
@@ -89,21 +67,6 @@ liquibase {
 	}
 }
 
-
-// From https://docs.gradle.org/current/userguide/java_testing.html
-val integrationTest = task<Test>("integrationTest") {
-	description = "Runs integration tests."
-	group = "verification"
-	testClassesDirs = sourceSets["intTest"].output.classesDirs
-	classpath = sourceSets["intTest"].runtimeClasspath
-	shouldRunAfter("test")
-
-	// Use "int" profile as in "integration tests", see application-int.properties
-	doFirst {
-		systemProperty("spring.profiles.active", "int")
-	}
-}
-
 tasks.withType<Test> {
 	useJUnitPlatform()
 	// Show everything when running tests
@@ -112,14 +75,12 @@ tasks.withType<Test> {
 	}
 }
 
+dockerCompose.isRequiredBy(project.tasks.named("test"))
+
 // Do not generate *-plain.jar
 tasks.getByName<Jar>("jar") {
 	enabled = false
 }
-
-tasks.check { dependsOn(integrationTest) }
-
-dockerCompose.isRequiredBy(integrationTest)
 
 // Start services when running integration tests
 dockerCompose {

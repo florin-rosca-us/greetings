@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class Greeting {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
