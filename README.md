@@ -34,6 +34,19 @@ We could have used [initdb.sql](./initdb.sql) to create the schema but we are us
 
 To create the schema, run: `./gradlew update`
 
+## Code
+### JPA
+We are using [Spring Data JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+
+### Testing
+* Using [JUnit 5](https://junit.org/junit5/)
+* Using [Mockito](https://site.mockito.org/)
+* Using [AssertJ](https://assertj.github.io/doc/)
+
+Starting Docker containers for both unit tests and integration tests. Why for unit tests: There is no lazy 
+initialization of the data access layer. The application will not start if the database connection cannot be opened. 
+Don't want to create an in-memory database just for testing. Using a different configuration / set of beans just for
+testing does not feel right.
 
 ## Running
 
@@ -41,15 +54,11 @@ It is possible to run the app/service with `cd build/libs && java -jar hello-spr
 We are using this in a Docker image, see [app.Dockerfile](./docker/app.Dockerfile) and
 [docker-compose.yml](./docker-compose.yml).
 
-To build Docker images: `docker compose build`
+* To build Docker images: `docker compose build`
+* To start containers: `docker compose up`
+* To stop containers: `docker compose down`
 
-To start containers: `docker compose up`
-
-To stop containers: `docker compose down`
-
-> TODO: Automate Docker stuff in build with something like [gradle-docker](https://github.com/palantir/gradle-docker). 
-Warning: that project is "on life support"...
-Also, test with Docker containers?
+> Note: Docker compose up / down are invoked before / after the test phase of the build
 
 ## Service
 
@@ -71,6 +80,6 @@ will switch to OpenTelemetry if it makes sense.
 spans.
 
 ## Next?
-* Write something to the database...
+* TODO: Some meaningful tests: write to database in a transaction, rollback transaction? There was something like that...
 * Query database, return results...
 * Authentication/authorization? App token?
